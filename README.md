@@ -14,3 +14,4 @@ or
 
 1. Currently accepts inputs outside of technically legal board bounds
 2. Algorithm for checking if a move is legal or not is too slow, so if there the board it clicked to quickly a technically illegal move can be played.
+3. Ko (points in Go) are currently not counted, I will probably do this by using floodfill to find the surrounded area.
