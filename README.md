@@ -8,7 +8,7 @@ Go isn't too hard of a game once you have played it, so for the rules I would re
 
 or
 
-2. lLearning to play at https://online-go.com/
+2. Learning to play at https://online-go.com/
 
 ## Known Problems
 
