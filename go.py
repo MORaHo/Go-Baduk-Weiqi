@@ -32,6 +32,8 @@ size = 13
 colours  = [0,black,white]
 width = size * alt + alt
 height = size * alt + alt
+pre_board = None
+post_board = None
 
 #initializing pygame window
 pg.init()
@@ -245,32 +247,34 @@ while run:
             pos_y = ((mouse_pos[0]-alt/2)//alt)*alt+alt 
             pos_x = ((mouse_pos[1]-alt/2)//alt)*alt+alt
             pos_s = (pos_x,pos_y)
-
             #checking is the click is within the limits of the board
             if int((pos_y//alt)-1) < 0 or int((pos_x//alt)-1) < 0: continue
             if int((pos_y//alt)-1) > size-1 or int((pos_x//alt)-1) > size-1: continue
             #checking if the move place is filled or not
             if piece_board[int((pos_y//alt)-1),int((pos_x//alt)-1)] != None:
                 continue
+
             else:
                 #checking if the move is part of is the secondary move to a ko fight
-                pre_board = board
+                pre_board = numpy.copy(board)
                 set_stone(int((pos_y//alt)),int((pos_x//alt)),color)
                 if seki_count == 1:
                     captures(color,pg_color)
-                    post_board = board
+                    post_board = numpy.copy(board)
+                    #if it is continue until the ko fight is not initiated
+                    if (pre_board == post_board).all():
+                        continue
                     #if not secondary move to the ko fight, then place the stone
-                    if pre_board.all() == post_board.all():
+                    else:
+                        if pg_color == black: color = WHITE;pg_color = white
+                        else: pg_color = black; color = BLACK
                         draw_board()
                         seki_count = 0
-                    #if it is continue until the ko fight is not initiated
-                    else: 
-                        continue
+                        #continue
                 #any move that doesn't fall within the rules for a ko fight
                 
                 else:
                     seki_count = 0
-                    #draw_board()
                     check_array = captures(3-color,pg_color)
                     
                     if check_array: continue
@@ -281,7 +285,7 @@ while run:
                     #checking if there is a capture due to the move, if so redraw the board (cannot just delete since they are drawn, so you have to redraw)
                     captures_have_been_had = not check_array
                     if captures_have_been_had and seki_count == 0: draw_board()
-                    
+
                     #switching colours for the next move
                     if pg_color == black: color = WHITE;pg_color = white
                     else: pg_color = black; color = BLACK
