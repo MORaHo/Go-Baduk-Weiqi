@@ -177,13 +177,15 @@ def draw_board():
     pg.display.flip()
 
 def captures(color,pg_color):
+
     global check
     global seki_count
     check = False
+
     #loop over the board squares
     for y in range(len(board)):
         for x in range(len(board)):
-        
+            
             #init piece
             piece = board[y][x]
 
@@ -204,15 +206,18 @@ def captures(color,pg_color):
 
                     #if the move is a "ko" move but causes the capture of stones, then it is not allowed, unless it is the second move, in which case it is dealt afterwards
                     if seki_count == 0:
+
                         draw_board()
                         #switching colours for the next move
                         if pg_color == black: color = WHITE;pg_color = white
                         else: pg_color = black; color = BLACK
+
                         #returns False, which means that the move has caused a capture (the logic worked out that way in the initial development and i'm not sure what it would affect if it is changed)
-                        check = False
+                        check = True
                         seki_count = 1
                         continue             
-
+                        
+                else: check = False
                 #restore the board
                 restore_board()
 
@@ -271,19 +276,16 @@ while run:
                         draw_board()
                         seki_count = 0
                         #continue
+
                 #any move that doesn't fall within the rules for a ko fight
-                
                 else:
                     seki_count = 0
-                    check_array = captures(3-color,pg_color)
-                    
-                    if check_array: continue
+                    captures_have_been_had = captures(3-color,pg_color)
 
                     #placing stone
                     piece_board[int((pos_y//alt)-1)][int((pos_x//alt)-1)] = Piece(pos_s,pg_color)
 
                     #checking if there is a capture due to the move, if so redraw the board (cannot just delete since they are drawn, so you have to redraw)
-                    captures_have_been_had = not check_array
                     if captures_have_been_had and seki_count == 0: draw_board()
 
                     #switching colours for the next move
