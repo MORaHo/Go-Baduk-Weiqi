@@ -3,6 +3,7 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame as pg
 from pygame.locals import *
 import numpy
+import sys
 
 #global variables
 EMPTY = 0
@@ -15,21 +16,29 @@ LIBERTY = 8
 #count
 liberties = []
 block = []
+seki_count = 0
+seki_liberties = []
+run = True
+board = None
 
 #gui variables
-board = None
 alt = 40
-run = True
 white = (255,255,255)
 black = (10,10,10)
 board_bg =  (171,144,88)
 color = BLACK
 pg_color = black
-size = 19
+size = 13
 colours  = [0,black,white]
 width = size * alt + alt
 height = size * alt + alt
-seki_count = 0
+
+#initializing pygame window
+pg.init()
+fps = 30
+CLOCK = pg.time.Clock()
+screen = pg.display.set_mode((width, height),0,32)
+pg.display.set_caption("Go")
 
 def set_board_vals(size):
     vals = []
@@ -48,20 +57,17 @@ for a in range(size):
         null_vals.append(val)
 piece_board = numpy.array(null_vals,dtype=object).reshape(size,size)
 
-#Board
+#Text Board
 vals=set_board_vals(size)
 board = numpy.array(vals,dtype=int).reshape(size+2,size+2)
 
 class Piece():
 
     def __init__(self,pos,color):
-        
+
         super().__init__()
         self.show_color = color
-        circle = pg.draw.circle(screen,color,(pos[0],pos[1]),20)
-
-    def return_color(self):
-        return self.show_color
+        pg.draw.circle(screen,color,(pos[0],pos[1]),20)
 
 def count(x,y,colour):
     #initialize piece
@@ -98,6 +104,8 @@ def count(x,y,colour):
 
 #remove captured stones
 def clear_block():
+
+    #clears the elements in the block of elements which is captured
     for i in range(len(block)): 
         y = block[i][0]
         x = block[i][1]
@@ -135,11 +143,40 @@ def clear_board():
     #clear groups
     clear_groups()
 
+    #clears the board
     for y in range(len(board)):
         for x in range(len(board)):
             if board[y][x] != OFFBOARD: board[y][x] = 0
 
-def captures(color):
+def draw_board():
+
+    screen.fill(board_bg)
+
+    for i in range(1,size+1):
+        #horizontal lines
+        pg.draw.line(screen,black,(alt*i,alt),(i*alt,width-alt),1)
+        #vertical lines
+        pg.draw.line(screen,black,(alt,i*alt),(height-alt,i*alt),1)
+        pg.display.flip()
+
+    for y in range(len(board)):
+        for x in range(len(board)):
+            if board[y][x] == 1 or board[y][x] == 2:
+                try:
+                    pos_x = ((x-1)*alt)+alt
+                    pos_y = (y-1)*alt+alt
+                    pos_s = (pos_x,pos_y)
+                    #board has values of 1 and 2 for black and white so we can associate this with list positions in the colours list
+                    piece_colour = colours[board[y][x]]
+                    piece_board[y-1][x-1] = Piece(pos_s,piece_colour)
+                    pg.display.flip()
+                except:
+                    pass
+    pg.display.flip()
+
+def captures(color,pg_color):
+    global check
+    global seki_count
     check = False
     #loop over the board squares
     for y in range(len(board)):
@@ -153,56 +190,40 @@ def captures(color):
 
             #if stone belongs to given colour
             if piece & color:
+                
                 #count liberties
                 count(x,y,color)
 
                 #if no liberties remove the stones
-
                 if len(liberties) == 0: 
                     
+                    #clear block
                     clear_block()
-                    check = True
-                
+
+                    #if the move is a "ko" move but causes the capture of stones, then it is not allowed, unless it is the second move, in which case it is dealt afterwards
+                    if seki_count == 0:
+                        draw_board()
+                        #switching colours for the next move
+                        if pg_color == black: color = WHITE;pg_color = white
+                        else: pg_color = black; color = BLACK
+                        #returns False, which means that the move has caused a capture (the logic worked out that way in the initial development and i'm not sure what it would affect if it is changed)
+                        check = False
+                        seki_count = 1
+                        continue             
 
                 #restore the board
                 restore_board()
+
     return check
 
 def set_stone(y,x,color):
-    #make move
+
+    #making move on the board
     board[y][x] = int(color)
 
-#initializing pygame window
-pg.init()
-fps = 30
-CLOCK = pg.time.Clock()
-screen = pg.display.set_mode((width, height),0,32)
-pg.display.set_caption("Go")
-
-def draw_board():
-    screen.fill(board_bg)
-
-    for i in range(1,size+1):
-        pg.draw.line(screen,black,(alt*i,alt),(i*alt,width-alt),1)
-        pg.draw.line(screen,black,(alt,i*alt),(height-alt,i*alt),1)
-        pg.display.flip()
-
-    for y in range(len(board)):
-        for x in range(len(board)):
-            if board[y][x] == 1 or board[y][x] == 2:
-                try:
-                    pos_x = ((x-1)*alt)+alt
-                    pos_y = (y-1)*alt+alt
-                    pos_s = (pos_x,pos_y)
-                    #board has valies of 1 and 2 for black and white so we can associate this with list positions in the colours list
-                    piece_colour = colours[board[y][x]]
-                    piece_board[y-1][x-1] = Piece(pos_s,piece_colour)
-                    pg.display.flip()
-                except:
-                    pass
-    pg.display.flip()
-
 def get_pos():
+
+    #getting mouse position and returning it
     pos = pg.mouse.get_pos()
     x = pos[0]
     y = pos[1]
@@ -218,42 +239,57 @@ while run:
             run =False
 
         if event.type == pg.MOUSEBUTTONDOWN:
+
+            #getting the position of the mouse click and converting it relative pixels on the screen
             mouse_pos = get_pos()
-            pos_y = ((mouse_pos[0]-alt/2)//alt)*alt+alt
+            pos_y = ((mouse_pos[0]-alt/2)//alt)*alt+alt 
             pos_x = ((mouse_pos[1]-alt/2)//alt)*alt+alt
             pos_s = (pos_x,pos_y)
+
+            #checking is the click is within the limits of the board
+            if int((pos_y//alt)-1) < 0 or int((pos_x//alt)-1) < 0: continue
+            if int((pos_y//alt)-1) > size-1 or int((pos_x//alt)-1) > size-1: continue
+            #checking if the move place is filled or not
             if piece_board[int((pos_y//alt)-1),int((pos_x//alt)-1)] != None:
                 continue
             else:
+                #checking if the move is part of is the secondary move to a ko fight
+                pre_board = board
                 set_stone(int((pos_y//alt)),int((pos_x//alt)),color)
-                flag_counter = captures(3-color)
-                if len(liberties) == 0 and flag_counter and seki_count == 0:
-                    draw_board()
-                    if pg_color == black: color = WHITE;pg_color = white
-                    else: pg_color = black; color = BLACK
-                    seki_count = 1
-                    continue
-                if len(liberties) == 0 and seki_count == 1:
-                    seki_count = 0
-                    seki_check = True
-                    continue
-
-                flag = captures(color)
-                if len(liberties) == 0 and flag == True:
-                    continue
+                if seki_count == 1:
+                    captures(color,pg_color)
+                    post_board = board
+                    #if not secondary move to the ko fight, then place the stone
+                    if pre_board.all() == post_board.all():
+                        draw_board()
+                        seki_count = 0
+                    #if it is continue until the ko fight is not initiated
+                    else: 
+                        continue
+                #any move that doesn't fall within the rules for a ko fight
+                
                 else:
                     seki_count = 0
+                    #draw_board()
+                    check_array = captures(3-color,pg_color)
+                    
+                    if check_array: continue
+
+                    #placing stone
                     piece_board[int((pos_y//alt)-1)][int((pos_x//alt)-1)] = Piece(pos_s,pg_color)
 
-                    if color == BLACK: enter_color = WHITE
-                    else: enter_color = BLACK
+                    #checking if there is a capture due to the move, if so redraw the board (cannot just delete since they are drawn, so you have to redraw)
+                    captures_have_been_had = not check_array
+                    if captures_have_been_had and seki_count == 0: draw_board()
 
-                    captures_have_been_had = captures(enter_color)
-                    if captures_have_been_had: draw_board()
-
+                    #switching colours for the next move
                     if pg_color == black: color = WHITE;pg_color = white
                     else: pg_color = black; color = BLACK
 
     pg.display.update()
 
 pg.quit()
+
+
+
+
