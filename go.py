@@ -281,7 +281,7 @@ while run:
                     #checking if there is a capture due to the move, if so redraw the board (cannot just delete since they are drawn, so you have to redraw)
                     captures_have_been_had = not check_array
                     if captures_have_been_had and seki_count == 0: draw_board()
-
+                    
                     #switching colours for the next move
                     if pg_color == black: color = WHITE;pg_color = white
                     else: pg_color = black; color = BLACK
