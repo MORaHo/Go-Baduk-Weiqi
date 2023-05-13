@@ -5,6 +5,8 @@ from pygame.locals import *
 import numpy
 import sys
 
+__location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
 #global variables
 EMPTY = 0
 BLACK = 1
@@ -40,10 +42,11 @@ post_board = None
 
 #initializing pygame window
 pg.init()
-fps = 30
 CLOCK = pg.time.Clock()
 screen = pg.display.set_mode((width, height),0,32)
 pg.display.set_caption("Go")
+pygame_icon = pg.image.load(os.path.join(__location__, 'app_icon.png'))
+pg.display.set_icon(pygame_icon)
 
 def set_board_vals(size):
     vals = []
@@ -75,21 +78,18 @@ class Piece():
         pg.draw.circle(screen,color,(pos[0],pos[1]),20)
 
 def count(x,y,colour):
+
     #initialize piece
     piece = board[y][x]
-
     #skip offboard squares
     if piece == OFFBOARD: return
-
     #if there's a stone at square
     if piece and piece & colour and (piece & MARKER) == 0:
         
         #save stone coords
         block.append((y,x))
-
         #mark the stone
         board[y][x] |= MARKER
-
         #look for neighbours recursively
         count(x,y-1,colour) #walk north
         count(x-1,y,colour) #walk east
@@ -101,7 +101,6 @@ def count(x,y,colour):
 
         #mark liberty
         board[y][x] = LIBERTY
-
         #save liberties
         liberties.append((y,x))
 
@@ -219,10 +218,7 @@ def captures(color,pg_color):
                         check = True
                         seki_count = 1
                         continue
-                    
 
-
-                #else: check = False
                 #restore the board
                 restore_board()
 
@@ -290,13 +286,10 @@ while run:
                         continue
 
                     captures_have_been_had = captures(3-color,pg_color)
-
                     #placing stone
                     piece_board[int((pos_y//alt)-1)][int((pos_x//alt)-1)] = Piece(pos_s,pg_color)
-
                     #checking if there is a capture due to the move, if so redraw the board (cannot just delete since they are drawn, so you have to redraw)
                     if captures_have_been_had and seki_count == 0: draw_board()
-
                     #switching colours for the next move
                     if pg_color == black: color = WHITE;pg_color = white
                     else: pg_color = black; color = BLACK
@@ -304,7 +297,3 @@ while run:
     pg.display.update()
 
 pg.quit()
-
-
-
-
