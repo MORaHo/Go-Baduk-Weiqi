@@ -31,4 +31,4 @@ pip install pygame
 - Graphics to show who's turn it is.
 - Estimation of Komi.
 - Development for web.
-- LAN multiplier.
+- LAN multiplayer.
