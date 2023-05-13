@@ -18,7 +18,7 @@ This is a game of Go made with pygame. The game is played on the same board by t
 
 1. Komi (points in Go) are currently not counted, I will probably do this by using floodfill to find the surrounded area.
 
-## (Probable)Future Development
+## (Probable) Future Development
 
 - Ability to change the size of the board without changing directly in code, currently 13 is default.
 - Graphics to show who's turn it is.
