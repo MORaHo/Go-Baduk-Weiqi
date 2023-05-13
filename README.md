@@ -14,6 +14,13 @@ or
 
 This is a game of Go made with pygame. The game is played on the same board by two people, with alternating picks for moves. The engine is quite simple but follows all the rules of the game, including blocking a ko fight from occuring and blocking suicide 
 
+## Requirements
+Python since it's a python game and pygame which can be downloaded in command line with:
+
+~~~
+pip install pygame
+~~~
+
 ## Known Problems
 
 1. Komi (points in Go) are currently not counted, I will probably do this by using floodfill to find the surrounded area.
