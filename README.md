@@ -14,6 +14,10 @@ or
 
 This is a game of Go made with pygame. The game is played on the same board by two people, with alternating picks for moves. The engine is quite simple but follows all the rules of the game, including blocking a ko fight from occuring and blocking suicide. NOTE: This not an a Go AI, any AI for this that I would develop would be on a different repository.
 
+### Recognition
+
+A lot of the base logic regarding the game came from this series by Chess Programming: https://www.youtube.com/watch?v=dHlan0bgr5U&list=PLmN0neTso3JzVlIQC3fwnP1qgIKp1x97X
+
 ## Requirements
 Python since it's a python game and pygame which can be downloaded in command line with:
 
