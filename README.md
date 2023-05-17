@@ -36,3 +36,4 @@ pip install pygame
 - Estimation of Komi.
 - Development for web.
 - LAN multiplayer.
+- AI to play against
