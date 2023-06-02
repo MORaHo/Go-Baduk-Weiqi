@@ -3,7 +3,6 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame as pg
 from pygame.locals import *
 import numpy
-import sys
 
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
@@ -25,10 +24,10 @@ board = None
 
 #gui variables
 alt = 40
-white = (255,243,0)
-#white = (255,255,255)
-black = (0,116,255)
-#black = (0,0,0)
+#white = (255,243,0)
+white = (255,255,255)
+#black = (0,116,255)
+black = (0,0,0)
 line_black = (0,0,0)
 board_bg =  (171,144,88)
 color = BLACK
