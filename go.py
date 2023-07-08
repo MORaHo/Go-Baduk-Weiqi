@@ -151,7 +151,7 @@ def clear_board():
         for x in range(len(board)):
             if board[y][x] != OFFBOARD: board[y][x] = 0
 
-def draw_board():
+def draw_board() -> None:
 
     screen.fill(board_bg)
 
@@ -160,7 +160,6 @@ def draw_board():
         pg.draw.line(screen,line_black,(alt*i,alt),(i*alt,width-alt),1)
         #vertical lines
         pg.draw.line(screen,line_black,(alt,i*alt),(height-alt,i*alt),1)
-        pg.display.flip()
 
     for y in range(len(board)):
         for x in range(len(board)):
@@ -172,7 +171,6 @@ def draw_board():
                     #board has values of 1 and 2 for black and white so we can associate this with list positions in the colours list
                     piece_colour = colours[board[y][x]]
                     piece_board[y-1][x-1] = Piece(pos_s,piece_colour)
-                    pg.display.flip()
                 except:
                     pass
     pg.display.flip()
