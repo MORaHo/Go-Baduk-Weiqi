@@ -205,7 +205,7 @@ def captures(color,pg_color):
 
                     #if the move is a "ko" move but causes the capture of stones, then it is not allowed, unless it is the second move, in which case it is dealt afterwards
                     if seki_count == 0:
-                        print("here")
+                        #print("here")
                         draw_board()
                         #switching colours for the next move
                         if pg_color == black: color = WHITE;pg_color = white
@@ -262,7 +262,7 @@ while run:
                 pre_board = numpy.copy(board)
                 set_stone(int((pos_y//alt)),int((pos_x//alt)),color)
                 if seki_count == 1:
-                    print("or here")
+                    #print("or here")
                     captures(color,pg_color)
                     post_board = numpy.copy(board)
                     #if it is continue until the ko fight is not initiated
