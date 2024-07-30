@@ -1,4 +1,4 @@
-# MoGo (idk I just picked a name)
+# Go Game Player
 Go board game made in python and visualized using pygame, following japanese Go rules regarding Ko
 
 ## Rules of Go
